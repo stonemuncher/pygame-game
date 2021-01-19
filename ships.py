@@ -19,7 +19,6 @@ class Ship(Sprite):
         self.y = y
         self.area = area
         self.rect.update(self.x, self.y, self.width, self.height)
-        self.speed = area.width*area.height/1600000
 
     def move(self, x_change, y_change):
         if self.area.left < self.x + x_change + self.width/2 < self.area.right:
@@ -44,13 +43,13 @@ class PlayerShip(Ship):
 
     def update(self, pressed_keys):
         if pressed_keys[K_UP]:
-            self.move(0, -self.speed)
+            self.move(0, -0.5)
         if pressed_keys[K_DOWN]:
-            self.move(0, self.speed)
+            self.move(0, 0.5)
         if pressed_keys[K_LEFT]:
-            self.move(-self.speed, 0)
+            self.move(-0.5, 0)
         if pressed_keys[K_RIGHT]:
-            self.move(self.speed, 0)
+            self.move(0.5, 0)
 
     def get_bullet_no(self):
         return len(self.bullets)

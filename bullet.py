@@ -13,7 +13,7 @@ class Bullet:
         self.y = ship.y
 
         self.in_area = True
-        self.speed = area.width*area.height/1600000
+        self.speed = 0.5
         self.rect.update(self.x, self.y, self.width, self.height)
 
     def update(self):
