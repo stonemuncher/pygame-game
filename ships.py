@@ -80,7 +80,7 @@ class AlienShip(Ship):
             if self.x - 10 < self.area.left or self.x + self.width + 10 > self.area.right:
                 self.direction *= -1
                 self.move(0, 100)
-                if self.y > self.area.bottom + self.height - 10:
+                if not(self.area.top < self.y + 100 - self.height/2 < self.area.bottom):
                     return 0
-            self.move(-0.25*self.direction, 0)
+            self.move(-0.5*self.direction, 0)
         return 1
