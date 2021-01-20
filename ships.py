@@ -54,3 +54,33 @@ class PlayerShip(Ship):
 
     def get_bullet_no(self):
         return len(self.bullets)
+
+
+class AlienShip(Ship):
+    def __init__(self, surf, area, health=1):
+        super().__init__(surf, area)
+        self.health = health
+        self.alive = True
+        self.x = (self.area.width / 2) - (self.width / 2)
+        self.y = self.area.top
+        self.direction = 1
+        self.move(0, 0)
+
+    def update(self, bullets):
+        for bullet in bullets:
+            if self.y > bullet.y - bullet.height/2 > self.y + self.height:
+                if self.x < bullet.x + bullet.width/2 < self.x + self.width:
+                    self.health -= 1
+                    if self.health == 0:
+                        print("Killed alien")
+                        self.alive = False
+                    bullet.alive = False
+
+        if self.direction:
+            if self.x - 10 < self.area.left or self.x + self.width + 10 > self.area.right:
+                self.direction *= -1
+                self.move(0, 100)
+                if self.y > self.area.bottom + self.height - 10:
+                    return 0
+            self.move(-0.25*self.direction, 0)
+        return 1

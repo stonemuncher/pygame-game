@@ -12,7 +12,7 @@ class Bullet:
         self.x = ship.x + ship.width/2 - 10
         self.y = ship.y
 
-        self.in_area = True
+        self.alive = True
         self.speed = area.width*area.height/1600000
         self.rect.update(self.x, self.y, self.width, self.height)
 
@@ -20,6 +20,6 @@ class Bullet:
         if self.area.top < self.y + self.speed - self.height/2 < self.area.bottom:
             self.y -= self.speed
         else:
-            self.in_area = False
+            self.alive = False
 
         self.rect.update(self.x, self.y, self.width, self.height)
