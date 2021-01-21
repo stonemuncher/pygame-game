@@ -19,7 +19,7 @@ class Ship(Sprite):
         self.y = y
         self.area = area
         self.rect.update(self.x, self.y, self.width, self.height)
-        self.speed = area.width*area.height/1600000
+        self.speed = 5
 
     def move(self, x_change, y_change):
         if self.area.left < self.x + x_change + self.width/2 < self.area.right:
@@ -63,6 +63,7 @@ class AlienShip(Ship):
         self.alive = True
         self.x = (self.area.width / 2) - (self.width / 2)
         self.y = self.area.top
+        self.speed = 3
         self.direction = 1
         self.move(0, 0)
 
@@ -82,5 +83,5 @@ class AlienShip(Ship):
                 self.move(0, 100)
                 if not(self.area.top < self.y + 100 - self.height/2 < self.area.bottom):
                     return 0
-            self.move(-0.5*self.direction, 0)
+            self.move(-self.speed*self.direction, 0)
         return 1

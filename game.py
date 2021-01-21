@@ -29,9 +29,10 @@ class Game:
         self.alien_area = Area(0, 0, self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
 
         self.alien_ships = []
-        self.alien_delay = 2000
+        self.alien_delay = 1000
         self.alien_spawn_event = pygame.USEREVENT + 1
 
+        self.score = 0
         self.exit_window = False
 
     def load_surfaces(self):
@@ -60,7 +61,45 @@ class Game:
         self.alien_ships.append(AlienShip(self.alien_surface, self.alien_area, 3))
 
     def update(self):
+        self.screen.fill((0, 0, 0))
 
+        pressed_keys = pygame.key.get_pressed()
+        self.player_ship.update(pressed_keys)
+        self.screen.blit(self.player_ship.surf, self.player_ship.rect)
+
+        for bullet in self.player_ship.bullets:
+            bullet.update()
+            if not bullet.alive:
+                self.player_ship.bullets.remove(bullet)
+                del bullet
+            else:
+                self.screen.blit(bullet.surf, bullet.rect)
+
+        for alien in self.alien_ships:
+            if not alien.update(self.player_ship.bullets):
+                pygame.display.set_caption(
+                    f"GAME OVER!")
+                pygame.time.wait(3000)
+                self.exit_window = True
+            if not alien.alive:
+                self.score += 1
+                self.alien_ships.remove(alien)
+                del alien
+                # print("killed alien ship")
+            else:
+                final_surf = alien.surf.copy()
+                if alien.health == 3:
+                    final_surf.blit(self.alien_red, (0, 0), special_flags=pygame.BLEND_MULT)
+                elif alien.health == 2:
+                    final_surf.blit(self.alien_orange, (0, 0), special_flags=pygame.BLEND_MULT)
+                else:
+                    final_surf.blit(self.alien_green, (0, 0), special_flags=pygame.BLEND_MULT)
+                self.screen.blit(final_surf, alien.rect)
+        pygame.display.flip()
+
+    def run(self, fps):
+        pygame.time.set_timer(self.alien_spawn_event, self.alien_delay)
+        fps_clock = pygame.time.Clock()
         while not self.exit_window:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -71,41 +110,7 @@ class Game:
                 if event.type == self.alien_spawn_event:
                     self.spawn_alien()
 
-            self.screen.fill((0, 0, 0))
-
-            pressed_keys = pygame.key.get_pressed()
-            self.player_ship.update(pressed_keys)
-            self.screen.blit(self.player_ship.surf, self.player_ship.rect)
-
-            for bullet in self.player_ship.bullets:
-                bullet.update()
-                if not bullet.alive:
-                    self.player_ship.bullets.remove(bullet)
-                    del bullet
-                else:
-                    self.screen.blit(bullet.surf, bullet.rect)
-
-            for alien in self.alien_ships:
-                if not alien.update(self.player_ship.bullets):
-                    return
-                if not alien.alive:
-                    self.alien_ships.remove(alien)
-                    del alien
-                    # print("killed alien ship")
-                else:
-                    final_surf = alien.surf.copy()
-                    if alien.health == 3:
-                        final_surf.blit(self.alien_red, (0, 0), special_flags=pygame.BLEND_MULT)
-                    elif alien.health == 2:
-                        final_surf.blit(self.alien_orange, (0, 0), special_flags=pygame.BLEND_MULT)
-                    else:
-                        final_surf.blit(self.alien_green, (0, 0), special_flags=pygame.BLEND_MULT)
-                    self.screen.blit(final_surf, alien.rect)
-
-            pygame.display.flip()
-
-    def run(self):
-
-        pygame.time.set_timer(self.alien_spawn_event, self.alien_delay)
-        self.update()
+            self.update()
+            fps_clock.tick(fps)
+            pygame.display.set_caption(f"Alien invasion | Current Score: {self.score} | FPS: {int(fps_clock.get_fps())}")
         pygame.quit()
